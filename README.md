@@ -9,16 +9,17 @@ im using  a lightweight and minimalistic frontend framework designed to simplify
 To get started with dot-js, clone the repository and include the framework files in your project:
 
 ```bash
-git clone https://github.com/your-repo/dot-js.git
+git clone https://github.com/tomistaven/todonotes.git
 ```
 
-## Running the Example App
+## Running the to-do and notes App
 
 The framework includes an example application to help you get up and running quickly. Here's how to use it:
 
-1. Open the `index.html` file in your browser.
-2. Navigate to the **To-Do List** section to manage tasks with persistent storage.
-3. Switch to the **Notes** section to create text notes and draw on a canvas with support for pen, eraser, and highlighter tools.
+1. Navigate to the root directory **/todonotes** and in the CLI input the following command ```bash go run mytodonotes/server.go```
+2. Navigate to **http://localhost:8080/mytodonotes/**
+3. Navigate to the **To-Do List** section to manage tasks with persistent storage.
+4. Navigate to the **Notes** section to create text notes and draw on a canvas with support for pen (various colors) or  eraser.
 
 ## Features
 
@@ -28,7 +29,7 @@ the framework comes packed with features to streamline your development workflow
 - **Routing System:** A simple yet powerful routing system allows for seamless navigation between different views.
 - **Custom DOM API:** A lightweight DOM manipulation API simplifies the creation and management of UI components.
 - **To-Do App:** A fully functional to-do list with persistent storage, allowing users to add, complete, and delete tasks.
-- **Notes App:** A versatile notes app with a drawing canvas, featuring tools like pen, eraser, and highlighter, along with undo/redo functionality.
+- **Notes App:** A versatile notes app with a drawing canvas, featuring tools like pen and eraser, along with undo/redo functionality.
 
 ## Architecture and Design Principles
 

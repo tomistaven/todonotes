@@ -20,7 +20,7 @@ func main() {
     http.Handle("/", fs)
 
     // Start server on port 8080
-    log.Println("Serving on http://localhost:8080")
+    log.Println("Serving on http://localhost:8080/mytodonotes/")
     err := http.ListenAndServe(":8080", nil)
     if err != nil {
         log.Fatal(err)
