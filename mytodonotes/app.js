@@ -4,7 +4,7 @@ import { renderTodos } from "./pages/todos.js";
 import { renderNotes } from "./pages/notes.js";
 
 const routes = {
-    "/": renderTodos,  // Default route
+    "/": renderTodos,  // Default
     "/todos": renderTodos,
     "/notes": renderNotes,
 };

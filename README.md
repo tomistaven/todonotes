@@ -2,11 +2,11 @@ TO-DO and notes app
 
 ## Overview
 
-im using  a lightweight and minimalistic frontend framework designed to simplify the process of building dynamic user interfaces. With a focus on efficiency and ease of use, dot-js provides essential tools for managing state, handling events, and manipulating the DOM, making it an excellent choice for small to medium-sized web applications.
+im using a lightweight and minimalistic frontend framework designed to simplify the process of building dynamic user interfaces. With a focus on efficiency and ease of use, this lightweight franework provides essential tools for managing state, handling events, and manipulating the DOM, making it an excellent choice for small to medium-sized web applications.
 
 ## Installation
 
-To get started with dot-js, clone the repository and include the framework files in your project:
+To get started, clone the repository and include the framework files in your project:
 
 ```bash
 git clone https://github.com/tomistaven/todonotes.git
@@ -33,7 +33,7 @@ the framework comes packed with features to streamline your development workflow
 
 ## Architecture and Design Principles
 
-The dot-js framework is built around three core principles:
+The lightweight framework is built around three core principles:
 
 ### State Management
 
@@ -54,7 +54,7 @@ The `Router` class handles client-side routing, allowing you to navigate between
 
 ```javascript
 const router = new Router({
-  "/": renderHome,
+  "/": renderTodos,
   "/todos": renderTodos,
   "/notes": renderNotes,
 });
@@ -98,6 +98,7 @@ document.body.appendChild(button);
 
 I'm constantly working to improve this frame. Here are some planned features for future releases:
 
+- **A HOME PAGE**
 - **Export as PDF:** Add the ability to export notes and drawings as PDF files for easy sharing and printing.
 
 ---
