@@ -26,7 +26,10 @@ The app can be run as a **web app** or packaged as a **standalone desktop app** 
     - [For Windows](#for-windows)
     - [For macOS](#for-macos)
   - [Testing the App](#testing-the-app)
+    - [Manual Testing](#manual-testing)
+    - [Automated Testing](#automated-testing)
     - [Running the Packaged App](#running-the-packaged-app)
+    - [Troubleshooting Common Issues](#troubleshooting-common-issues)
   - [Features](#features)
   - [Architecture and Design Principles](#architecture-and-design-principles)
     - [State Management](#state-management)
@@ -75,20 +78,31 @@ The app can be run as a **web app** or packaged as a **standalone desktop app** 
 
 ### As a Standalone Desktop App (Electron)
 
-1. Install Node.js if you haven't already.
-2. Install Electron:
+1. Navigate to the app folder.
+    ```bash
+   cd todo-notes-app
+   ```
+2. Install Node.js if you haven't already.
+3. Install Electron:
    ```bash
    npm install electron --save-dev
    ```
-3. Start the app:
+4. Start the app:
    ```bash
    npm start
    ```
-4. The app will launch in a new window.
+5. The app will launch in a new window.
 
 ## Packaging the App
 
-To package the app for distribution, use Electron Packager or Electron Builder.
+To package the app for distribution and run through an executable, use Electron Packager or Electron Builder.
+
+Navigate to the app folder.
+    
+```bash
+cd todo-notes-app
+``` 
+
 
 ### For Linux
 
@@ -116,22 +130,106 @@ The packaged app will be in the `dist/` folder. Share the `.app` file with users
 
 ## Testing the App
 
+This section covers different approaches to testing the TO-DO and Notes App, including manual testing of features, automated testing with provided test scripts, and testing the packaged application.
+
+### Manual Testing
+
+To ensure all features work correctly, follow these test procedures:
+
+1. **To-Do List Testing:**
+   * **Adding Tasks:** Add several tasks to verify creation functionality.
+   * **Completing Tasks:** Mark tasks as complete to test state changes.
+   * **Deleting Tasks:** Remove tasks to test deletion logic.
+   * **Persistence:** Refresh the page to verify tasks are saved in local storage.
+
+2. **Notes App Testing:**
+   * **Text Notes:** Create and edit text notes.
+   * **Drawing Canvas:** Test the drawing tools:
+     * Pen tool with different colors
+     * Eraser tool
+     * Undo/redo functionality
+   * **Persistence:** Verify notes are saved after page refresh.
+
+3. **Navigation Testing:**
+   * Test navigation between To-Do List and Notes sections.
+   * Verify correct state preservation when switching between sections.
+
+### Automated Testing
+
+The app includes a test suite to verify core functionality:
+
+1. Install testing dependencies:
+   ```bash
+   npm install --save-dev jest
+   ```
+
+2. Run the test suite:
+   ```bash
+   npm test
+   ```
+
+3. Key tests include:
+   * State management functionality
+   * Router navigation
+   * DOM element creation and manipulation
+   * To-Do list operations (add, complete, delete)
+   * Notes app functionality
+
 ### Running the Packaged App
 
-1. **Download the App**:
-   * Download the packaged app (e.g., `.AppImage`, `.tar.gz`, or `.exe`).
+To test the packaged application:
 
-2. **Extract the Files (if necessary)**:
-   * If the app is shared as a `.tar.gz` or `.zip` file, extract it:
+1. **Download or Build the App**:
+   * Use the packaged app from the `dist/` folder (see [Packaging the App](#packaging-the-app)).
+   * Or download the pre-built app for your platform from the releases page.
+
+2. **Installation Testing**:
+   * For Windows: Run the `.exe` installer and follow the prompts.
+   * For macOS: Mount the `.dmg` file and drag the app to Applications.
+   * For Linux: Use the appropriate method for your distribution:
      ```bash
-     tar -xzvf my-todo-notes-app-linux-x64.tar.gz
+     # For .AppImage files
+     chmod +x Todo-Notes-App.AppImage
+     ./Todo-Notes-App.AppImage
+     
+     # For .deb packages on Debian/Ubuntu
+     sudo dpkg -i todo-notes-app.deb
+     
+     # For .tar.gz archives
+     tar -xzvf todo-notes-app-linux-x64.tar.gz
+     cd todo-notes-app-linux-x64
+     ./todo-notes-app
      ```
 
-3. **Run the App**:
-   * Navigate to the extracted folder and run the executable:
-     ```bash
-     ./my-todo-notes-app
-     ```
+3. **Startup Testing**:
+   * Verify the app launches correctly.
+   * Check that all UI elements render properly.
+   * Confirm no error messages appear in the console (press F12 in desktop app).
+
+4. **Cross-Platform Testing**:
+   * If possible, test on multiple operating systems to ensure consistent behavior.
+
+### Troubleshooting Common Issues
+
+* **App Won't Launch**:
+  * Verify all dependencies are installed.
+  * Check the console for error messages.
+  * Ensure your operating system meets the minimum requirements.
+
+* **Tasks or Notes Not Saving**:
+  * Clear browser cache if using web app.
+  * Check localStorage permissions.
+  * Verify no other instances of the app are running.
+
+* **Electron Packaging Issues**:
+  * Make sure you have the correct version of Node.js installed.
+  * Run `npm install` before packaging.
+  * Check for any error messages during the packaging process.
+
+* **Drawing Canvas Problems**:
+  * Ensure your browser/environment supports HTML5 Canvas.
+  * Try clearing the canvas and starting again.
+  * Restart the app if undo/redo functionality stops working.
 
 ## Features
 
