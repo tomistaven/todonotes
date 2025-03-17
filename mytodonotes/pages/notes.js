@@ -9,11 +9,14 @@ const notesState = new State("notes", { notes: [], currentPaths: [], redoStack: 
 let canvas, ctx;
 let isDrawing = false;
 let currentPath = [];
+let currentTool = "pen"; // Default tool
+let currentColor = "#000000"; // Default color (black)
+let currentLineWidth = 2; // Default line width
 
 function initCanvas() {
   canvas = document.createElement('canvas');
-  canvas.width = 400;
-  canvas.height = 200;
+  canvas.width = 600;
+  canvas.height = 300;
   ctx = canvas.getContext('2d');
   
   canvas.addEventListener('mousedown', startDrawing);
@@ -33,11 +36,13 @@ function startDrawing(e) {
   isDrawing = true;
   currentPath = [];
   const point = getPoint(e);
-  currentPath.push(point);
+  currentPath.push({ ...point, color: currentColor, lineWidth: currentLineWidth, tool: currentTool });
   
   ctx.beginPath();
   ctx.moveTo(point.x, point.y);
   ctx.lineTo(point.x, point.y);
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = currentLineWidth;
   ctx.stroke();
 }
 
@@ -45,8 +50,10 @@ function draw(e) {
   if (!isDrawing) return;
   
   const point = getPoint(e);
-  currentPath.push(point);
+  currentPath.push({ ...point, color: currentColor, lineWidth: currentLineWidth, tool: currentTool });
   
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = currentLineWidth;
   ctx.lineTo(point.x, point.y);
   ctx.stroke();
 }
@@ -115,6 +122,8 @@ function redrawCanvas() {
       ctx.beginPath();
       ctx.moveTo(path[0].x, path[0].y);
       path.forEach(point => {
+        ctx.strokeStyle = point.color;
+        ctx.lineWidth = point.lineWidth;
         ctx.lineTo(point.x, point.y);
       });
       ctx.stroke();
@@ -148,6 +157,39 @@ export function renderNotes() {
   // Initialize canvas
   canvas = initCanvas();
   
+  // Tool selection buttons
+  const toolContainer = createElement("div", { style: "display: flex; gap: 10px; margin: 10px 0;" });
+  
+  const penButton = createElement("button", { 
+    onClick: () => { 
+      currentTool = "pen"; 
+      currentColor = "#000000"; // Black for pen
+      currentLineWidth = 2; 
+    },
+    style: "background-color: #000000; color: white;"
+  }, ["Pen"]);
+  
+  const eraserButton = createElement("button", { 
+    onClick: () => { 
+      currentTool = "eraser"; 
+      currentColor = "#ffffff"; // White for eraser
+      currentLineWidth = 10; // Thicker line for eraser
+    },
+    style: "background-color: #ffffff; color: black; border: 1px solid black;"
+  }, ["Eraser"]);
+  
+  
+  // Color picker
+  const colorPicker = createElement("input", { 
+    type: "color", 
+    value: currentColor,
+    onChange: (e) => { currentColor = e.target.value; }
+  });
+
+  toolContainer.appendChild(penButton);
+  toolContainer.appendChild(eraserButton);
+  toolContainer.appendChild(colorPicker);
+
   const saveButton = createElement("button", { onClick: () => {
     const drawingData = canvas.toDataURL();
     saveNote(titleInput.value, contentInput.value, drawingData);
@@ -197,6 +239,7 @@ export function renderNotes() {
 
   container.appendChild(titleInput);
   container.appendChild(contentInput);
+  container.appendChild(toolContainer);
   container.appendChild(buttonContainer);
   container.appendChild(canvas);
   container.appendChild(list);
