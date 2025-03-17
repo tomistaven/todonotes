@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>To-Do & Notes App</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- framework  -->
+    <script type="module" src="../framework/core/dom.js"></script>
+    <script type="module" src="../framework/core/state.js"></script>
+    <script type="module" src="../framework/core/router.js"></script>
+    <!-- application  -->
+    <script type="module" src="app.js"></script>
+    <style>
+        canvas { border: 1px solid black; touch-action: none; } /* Prevents touch scrolling */
+    </style>
+</head>
+<body>
+    <nav>
+        <button id="nav-todos">To-Do List</button>
+        <button id="nav-notes">Notes</button>
+    </nav>
+    <div id="app"></div>
+</body>
+</html>
