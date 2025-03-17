@@ -1,4 +1,3 @@
-// pages/todos.js
 import { State } from "../../framework/core/state.js";
 import { createElement } from "../../framework/core/dom.js";
 
