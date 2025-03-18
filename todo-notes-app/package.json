@@ -10,15 +10,23 @@
     "appId": "com.github.tomistaven.todonotes",
     "productName": "My To-Do Notes App",
     "linux": {
-      "target": ["AppImage", "deb", "tar.gz"],
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ],
       "category": "Utility",
       "maintainer": "Tomi Stavén <tomistaven@gmail.com>"
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "mac": {
-      "target": ["dmg"]
+      "target": [
+        "dmg"
+      ]
     }
   },
   "author": {
