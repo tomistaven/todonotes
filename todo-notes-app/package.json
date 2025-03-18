@@ -3,10 +3,35 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder",
+    "publish": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.github.tomistaven.todonotes",
+    "productName": "My To-Do Notes App",
+    "publish": {
+      "provider": "github",
+      "owner": "tomistaven",
+      "repo": "todonotes"
+    },
+    "linux": {
+      "target": ["AppImage", "deb", "tar.gz"],
+      "category": "Utility"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    }
   },
   "devDependencies": {
     "electron": "^35.0.2",
+    "electron-builder": "^25.1.8",
     "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   }
 }
