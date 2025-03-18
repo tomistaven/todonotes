@@ -4,20 +4,15 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder",
-    "publish": "electron-builder --publish always"
+    "build": "electron-builder"
   },
   "build": {
     "appId": "com.github.tomistaven.todonotes",
     "productName": "My To-Do Notes App",
-    "publish": {
-      "provider": "github",
-      "owner": "tomistaven",
-      "repo": "todonotes"
-    },
     "linux": {
       "target": ["AppImage", "deb", "tar.gz"],
-      "category": "Utility"
+      "category": "Utility",
+      "maintainer": "Tomi Stavén <tomistaven@gmail.com>"
     },
     "win": {
       "target": ["nsis"]
@@ -26,12 +21,15 @@
       "target": ["dmg"]
     }
   },
+  "author": {
+    "name": "Tomi Stavén",
+    "email": "tomistaven@gmail.com"
+  },
+  "homepage": "https://github.com/tomistaven/todonotes",
+  "description": "A lightweight app for managing to-do lists and notes.",
   "devDependencies": {
     "electron": "^35.0.2",
     "electron-builder": "^25.1.8",
     "electron-packager": "^17.1.2"
-  },
-  "dependencies": {
-    "electron-updater": "^6.3.9"
   }
 }
