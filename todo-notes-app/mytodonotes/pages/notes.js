@@ -131,102 +131,268 @@ function redrawCanvas() {
 }
 
 // Save a new note
-function saveNote(title, content, drawing) {
-  if (!title && !content && !drawing) return;
+function saveNote(title, content) {
+  if (!title && !content && !currentPath.length) return;
   
+  const drawingData = currentPath.length ? canvas.toDataURL() : null;
   const state = notesState.getState();
-  const newNotes = [...state.notes || [], { title, content, drawing, date: new Date().toLocaleString() }];
-  notesState.setState({ ...state, notes: newNotes, currentPaths: [], redoStack: [] });
+  const newNote = {
+    title,
+    content,
+    drawing: drawingData,
+    date: new Date().toLocaleString()
+  };
+  
+  notesState.setState({ 
+    ...state, 
+    notes: [newNote, ...state.notes],
+    currentPaths: [],
+    redoStack: [] 
+  });
+  
+  // Clear inputs
+  document.getElementById('note-title').value = '';
+  document.getElementById('note-content').value = '';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 // Delete a note
 function deleteNote(index) {
   const state = notesState.getState();
-  const newNotes = (state.notes || []).filter((_, i) => i !== index);
+  const newNotes = state.notes.filter((_, i) => i !== index);
   notesState.setState({ ...state, notes: newNotes });
 }
 
-// Render the notes UI
-export function renderNotes() {
-  const container = createElement("div", {}, []);
+// Note Card Component
+// Note Card Component
+function NoteCard(note, index) {
+  const actionsContainer = createElement("div", { className: "note-actions" }, [
+    createElement("button", {
+      className: "icon-btn",
+      onClick: () => editNote(index)
+    }, ["✏️ Edit"]),
+    createElement("button", {
+      className: "icon-btn delete-btn",
+      onClick: () => deleteNote(index)
+    }, ["🗑️ Delete"])
+  ]);
 
-  const titleInput = createElement("input", { id: "note-title", placeholder: "Title" });
-  const contentInput = createElement("textarea", { id: "note-content", placeholder: "Write your note..." });
+  // Ensure flex styles are applied
+  actionsContainer.style.display = "flex";
+  actionsContainer.style.gap = "var(--space-sm)";
+
+  return createElement("div", { className: "note-card" }, [
+    createElement("div", { className: "note-header" }, [
+      createElement("h3", {}, [note.title || "Untitled Note"]),
+      createElement("small", { className: "note-date" }, [note.date])
+    ]),
+    note.content && createElement("p", { className: "note-content" }, [note.content]),
+    note.drawing && createElement("img", {
+      className: "note-drawing",
+      src: note.drawing,
+      alt: "Note drawing",
+      onClick: () => openFullscreenDrawing(note.drawing)
+    }),
+    actionsContainer
+  ]);
+}
+
+
+// Function to edit a note
+function editNote(index) {
+  const state = notesState.getState();
+  const noteToEdit = state.notes[index];
+
+  if (noteToEdit) {
+    // Load the note data into the editor
+    document.getElementById('note-title').value = noteToEdit.title;
+    document.getElementById('note-content').value = noteToEdit.content;
+
+    // If there's a drawing, load it into the canvas (optional, depending on your requirements)
+    if (noteToEdit.drawing) {
+      const img = new Image();
+      img.src = noteToEdit.drawing;
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+    }
+
+    // Remove the note from the list and update the state
+    const newNotes = state.notes.filter((_, i) => i !== index);
+    notesState.setState({ ...state, notes: newNotes });
+  }
+}
+
+
+// Fullscreen Drawing View
+function openFullscreenDrawing(src) {
+  const overlay = createElement("div", { className: "drawing-overlay" }, [
+    createElement("img", { src, className: "fullscreen-drawing" }),
+    createElement("button", { 
+      className: "close-btn",
+      onClick: () => document.body.removeChild(overlay)
+    }, ["×"])
+  ]);
+  document.body.appendChild(overlay);
+}
+
+// Render Notes UI
+export function renderNotes() {
+  // Create the main container
+  const container = createElement("div", { className: "notes-container" }, []);
+
+  // Create the editor section
+  const editorSection = createElement("div", { className: "notes-editor" }, []);
   
-  // Initialize canvas
-  canvas = initCanvas();
+  // Create the title and content inputs
+  const titleInput = createElement("input", { 
+    id: "note-title",
+    placeholder: "Note title",
+    className: "note-title-input"
+  });
   
-  // Tool selection buttons
-  const toolContainer = createElement("div", { style: "display: flex; gap: 10px; margin: 10px 0;" });
+  const contentInput = createElement("textarea", {
+    id: "note-content",
+    placeholder: "Write your note here...",
+    className: "note-content-input",
+    rows: 4
+  });
   
+  editorSection.appendChild(titleInput);
+  editorSection.appendChild(contentInput);
+  
+  // Create the toolbar with explicit inline styles to ensure horizontal layout
+  const toolContainer = createElement("div", { 
+    className: "toolbar" 
+  }, []);
+  
+  // Apply explicit styles to ensure horizontal layout
+  toolContainer.style.display = "flex";
+  toolContainer.style.flexDirection = "row";
+  toolContainer.style.width = "100%";
+  toolContainer.style.alignItems = "center"; // Align items vertically in the center
+  
+  // Create and append toolbar buttons
   const penButton = createElement("button", { 
+    className: `tool-btn ${currentTool === 'pen' ? 'active' : ''}`,
     onClick: () => { 
-      currentTool = "pen"; 
-      currentColor = "#000000"; // Black for pen
-      currentLineWidth = 2; 
-    },
-    style: "background-color: #000000; color: white;"
-  }, ["Pen"]);
+      currentTool = "pen";
+      currentColor = "#000000";
+      currentLineWidth = 2;
+    }
+  }, ["🖊️ Pen"]);
   
   const eraserButton = createElement("button", { 
+    className: `tool-btn ${currentTool === 'eraser' ? 'active' : ''}`,
     onClick: () => { 
-      currentTool = "eraser"; 
-      currentColor = "#ffffff"; // White for eraser
-      currentLineWidth = 10; // Thicker line for eraser
-    },
-    style: "background-color: #ffffff; color: black; border: 1px solid black;"
-  }, ["Eraser"]);
+      currentTool = "eraser";
+      currentColor = "#ffffff";
+      currentLineWidth = 10;
+    }
+  }, ["🧽 Eraser"]);
   
+  // Create a wrapper for the color picker to style it like a button
+  const colorPickerWrapper = createElement("div", {
+    className: "tool-btn"
+  }, ["🎨 Color: "]);
   
-  // Color picker
+  // Set the wrapper to be styled like a button
+  colorPickerWrapper.style.display = "flex";
+  colorPickerWrapper.style.alignItems = "center";
+  colorPickerWrapper.style.cursor = "pointer";
+  
+  // Create the color picker
   const colorPicker = createElement("input", { 
-    type: "color", 
+    type: "color",
     value: currentColor,
     onChange: (e) => { currentColor = e.target.value; }
   });
-
+  
+  // Style the color picker
+  colorPicker.style.marginLeft = "8px";
+  colorPicker.style.border = "none";
+  colorPicker.style.padding = "0";
+  colorPicker.style.background = "transparent";
+  colorPicker.style.width = "24px";
+  colorPicker.style.height = "24px";
+  colorPicker.style.cursor = "pointer";
+  
+  // Add the color picker to its wrapper
+  colorPickerWrapper.appendChild(colorPicker);
+  
+  // Append the buttons to toolbar
   toolContainer.appendChild(penButton);
   toolContainer.appendChild(eraserButton);
-  toolContainer.appendChild(colorPicker);
-
-  const saveButton = createElement("button", { onClick: () => {
-    const drawingData = canvas.toDataURL();
-    saveNote(titleInput.value, contentInput.value, drawingData);
-    titleInput.value = "";
-    contentInput.value = "";
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }}, ["Save Note"]);
-
-  const buttonContainer = createElement("div", { style: "display: flex; gap: 10px; margin: 10px 0;" });
+  toolContainer.appendChild(colorPickerWrapper);
   
-  const clearButton = createElement("button", { onClick: () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    notesState.setState({ ...notesState.getState(), currentPaths: [], redoStack: [] });
-  }}, ["Clear Drawing"]);
+  editorSection.appendChild(toolContainer);
   
-  const undoButton = createElement("button", { onClick: undoLastStroke }, ["Undo"]);
-  const redoButton = createElement("button", { onClick: redoLastStroke }, ["Redo"]);
+  // Initialize canvas
+  canvas = initCanvas();
+  editorSection.appendChild(canvas);
+  
+  // Action buttons
+  const buttonContainer = createElement("div", { className: "action-buttons" }, [
+    createElement("button", { 
+      className: "save-btn",
+      onClick: () => {
+        const title = document.getElementById('note-title').value;
+        const content = document.getElementById('note-content').value;
+        saveNote(title, content);
+      }
+    }, ["💾 Save Note"]),
+    
+    createElement("button", { 
+      className: "clear-btn",
+      onClick: () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        notesState.setState({ 
+          ...notesState.getState(), 
+          currentPaths: [], 
+          redoStack: [] 
+        });
+      }
+    }, ["🗑️ Clear"]),
+    
+    createElement("button", { onClick: undoLastStroke }, ["⏪ Undo"]),
+    createElement("button", { onClick: redoLastStroke }, ["⏩ Redo"])
+  ]);
 
-  buttonContainer.appendChild(saveButton);
-  buttonContainer.appendChild(clearButton);
-  buttonContainer.appendChild(undoButton);
-  buttonContainer.appendChild(redoButton);
+  // Ensure flex styles are applied
+buttonContainer.style.display = "flex";
+buttonContainer.style.gap = "var(--space-sm)";
 
-  const list = createElement("ul", { id: "notes-list" });
-
+  
+  editorSection.appendChild(buttonContainer);
+  container.appendChild(editorSection);
+  
+  // Create notes list section
+  const notesListSection = createElement("div", { className: "notes-list-container" }, [
+    createElement("h2", {}, ["Your Notes"])
+  ]);
+  
+  const notesGrid = createElement("div", { className: "notes-grid" }, []);
+  notesListSection.appendChild(notesGrid);
+  container.appendChild(notesListSection);
+  
   // Function to render the notes list
   const renderNotesList = () => {
-    list.innerHTML = "";
+    notesGrid.innerHTML = "";
     const state = notesState.getState();
-    (state.notes || []).forEach((note, index) => {
-      const li = createElement("li", {}, [
-        createElement("h3", {}, [note.title]),
-        createElement("p", {}, [note.content]),
-        createElement("small", {}, [`Saved: ${note.date}`]),
-        note.drawing ? createElement("img", { src: note.drawing, width: 200 }) : null,
-        createElement("button", { onClick: () => deleteNote(index) }, ["Delete"]),
-      ]);
-      list.appendChild(li);
+    
+    if (!state.notes || state.notes.length === 0) {
+      notesGrid.appendChild(
+        createElement("div", { className: "empty-state" }, [
+          createElement("p", {}, ["No notes yet"]),
+          createElement("p", {}, ["Create your first note above!"])
+        ])
+      );
+      return;
+    }
+
+    state.notes.forEach((note, index) => {
+      notesGrid.appendChild(NoteCard(note, index));
     });
   };
 
@@ -235,13 +401,6 @@ export function renderNotes() {
 
   // Subscribe to state changes
   notesState.subscribe(renderNotesList);
-
-  container.appendChild(titleInput);
-  container.appendChild(contentInput);
-  container.appendChild(toolContainer);
-  container.appendChild(buttonContainer);
-  container.appendChild(canvas);
-  container.appendChild(list);
   
   return container;
 }

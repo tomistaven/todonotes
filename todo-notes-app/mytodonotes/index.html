@@ -9,15 +9,23 @@
     <script type="module" src="../framework/core/router.js"></script>
     <!-- main app -->
     <script type="module" src="app.js"></script>
-    <style>
-        canvas { border: 1px solid black; touch-action: none; } /* Prevents touch scrolling */
-    </style>
 </head>
 <body>
-    <nav>
-        <button id="nav-todos">To-Do List</button>
-        <button id="nav-notes">Notes</button>
-    </nav>
-    <div id="app"></div> <!-- This is where the rendered components will appear -->
+    <div class="container">
+        <aside class="sidebar">
+            <h2>📌 To-Do Notes</h2>
+            <nav>
+                <button id="nav-todos">To-Do List</button>
+                <button id="nav-notes">Notes</button>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            
+            <!-- This is where your dynamic content will appear -->
+            <div id="app"></div>
+            
+        </main>
+    </div>
 </body>
 </html>

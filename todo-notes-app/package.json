@@ -36,7 +36,7 @@
   "homepage": "https://github.com/tomistaven/todonotes",
   "description": "A lightweight app for managing to-do lists and notes.",
   "devDependencies": {
-    "electron": "^35.0.2",
+    "electron": "^35.0.3",
     "electron-builder": "^25.1.8",
     "electron-packager": "^17.1.2"
   }
